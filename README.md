@@ -17,7 +17,7 @@ A React frontend for the Health Monitoring System.
 ### 1. **Clone the Repository**
 
 ```bash
-git clone https://github.com/your-username/one-doctor-web.git
+git clone https://github.com/sns-consultancy/one-doctor-web.git
 cd one-doctor-web
 ```
 
