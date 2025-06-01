@@ -1,3 +1,25 @@
+body {
+  /* Gradient background for the whole app */
+  min-height: 100vh;
+  background: linear-gradient(135deg, #3607de 0%, #4fc2a7 50%, #f9fafb 100%);
+}
+
+/* ...existing code... */
+
+.app-container {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 2rem auto;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px 0 rgba(31, 41, 55, 0.15);
+  backdrop-filter: blur(2px);
+}
+
+
+
+
+
 .App {
   text-align: center;
 }
@@ -36,3 +58,38 @@
     transform: rotate(360deg);
   }
 }
+
+
+.app-container {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.app-title {
+  color: #2563eb;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.app-nav {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.app-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  transition: text-decoration 0.2s;
+}
+
+.app-link:hover {
+  text-decoration: underline;
+}
+
+
