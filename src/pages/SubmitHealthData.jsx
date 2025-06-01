@@ -39,6 +39,7 @@ export function SubmitHealthData() {
     });
     const result = await response.json();
     setMessage(result.message);
+    
   };
 
   return (
