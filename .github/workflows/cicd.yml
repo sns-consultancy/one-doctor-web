@@ -1,0 +1,26 @@
+name: React CI/CD Pipeline
+
+on:
+  push:
+    branches: [ feature* ]
+  pull_request:
+    branches: [ master,develop ]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🔄 Checkout
+      uses: actions/checkout@v3
+
+    - name: 🧰 Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: 📦 Install dependencies
+      run: npm install
+
+    - name: 🛠️ Build React App
+      run: npm run build
