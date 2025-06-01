@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import styles from './SubmitHealthData.module.css';
+
 // Use environment variable for API key
 const API_KEY = process.env.REACT_APP_API_KEY;
-
+const API_URL = process.env.REACT_APP_API_URL;
 export function SubmitHealthData() {
   const [form, setForm] = useState({
     user_id: "",
@@ -19,11 +21,15 @@ export function SubmitHealthData() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Add last_updated only in the background
-    const dataToSend = {
-      ...form,
-      last_updated: new Date().toISOString(),
+ const dataToSend = {
+      user_id: form.user_id,
+      heartbeat: parseInt(form.heartbeat, 10),
+      temperature: parseFloat(form.temperature),
+      bloodPressure: form.bloodPressure,
+      oxygenLevel: parseFloat(form.oxygenLevel),
+      lastUpdated: new Date().toISOString(),
     };
-    const response = await fetch("http://localhost:5000/api/health", {
+    const response = await fetch(`${API_URL}/api/health`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -36,25 +42,25 @@ export function SubmitHealthData() {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-2">Submit Health Data</h2>
-      <form onSubmit={handleSubmit} className="space-y-2">
+    <div className={styles.container}>
+      <h2 className={styles.title}>Submit Health Data</h2>
+      <form onSubmit={handleSubmit} className={styles.form}>
         {Object.keys(form).map((field) => (
-          <div key={field}>
+          <div key={field} className={styles.inputGroup}>
             <input
               name={field}
               placeholder={field}
               value={form[field]}
               onChange={handleChange}
-              className="border p-1 w-full"
+              className={styles.input}
             />
           </div>
         ))}
-        <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">
+        <button type="submit" className={styles.button}>
           Submit
         </button>
       </form>
-      {message && <p className="mt-2 text-green-600">{message}</p>}
+      {message && <p className={styles.message}>{message}</p>}
     </div>
   );
 }
