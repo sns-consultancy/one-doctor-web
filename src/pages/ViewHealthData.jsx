@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import styles from './ViewHealthData.module.css';
 // Use environment variable for API key
 const API_KEY = process.env.REACT_APP_API_KEY;
+const API_URL = process.env.REACT_APP_API_URL;
 
 export function ViewHealthData() {
   const [userId, setUserId] = useState("");
@@ -10,7 +12,7 @@ export function ViewHealthData() {
   const fetchData = async () => {
     setError("");
     try {
-      const response = await fetch(`http://localhost:5000/api/health/${userId}`, {
+    const response = await fetch(`${API_URL}/api/health/${userId}`, {
         headers: { "x-api-key": API_KEY }
       });
       const result = await response.json();
@@ -22,25 +24,26 @@ export function ViewHealthData() {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-2">View Health Data</h2>
+    <div className={styles.container}>
+      <h2 className={styles.title}>View Health Data</h2>
       <input
         placeholder="Enter User ID"
         value={userId}
         onChange={(e) => setUserId(e.target.value)}
-        className="border p-1 mr-2"
+        className={styles.input}
       />
-      <button onClick={fetchData} className="bg-blue-500 text-white px-3 py-1 rounded">
+      <button onClick={fetchData} className={styles.button}>
         Fetch
       </button>
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {error && <p className={styles.message}>{error}</p>}
+      {console.log("Current error:", error)}
       {data && (
-        <table className="mt-4 bg-gray-100 rounded w-full text-left">
+        <table className={styles.table}>
           <tbody>
             {Object.entries(data).map(([key, value]) => (
-              <tr key={key}>
-                <th className="py-1 px-2 font-medium capitalize">{key.replace(/_/g, " ")}</th>
-                <td className="py-1 px-2">{value}</td>
+              <tr key={key} className={styles.tr}>
+                <th className={styles.th}>{key.replace(/_/g, " ")}</th>
+                <td className={styles.td}>{value}</td>
               </tr>
             ))}
           </tbody>
