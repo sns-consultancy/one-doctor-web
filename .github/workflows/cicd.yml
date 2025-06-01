@@ -24,3 +24,11 @@ jobs:
 
     - name: 🛠️ Build React App
       run: npm run build
+    - name: 🚀 Deploy to Heroku
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+      run: |
+        git fetch --prune --unshallow
+        git remote add heroku https://heroku:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APP_NAME}.git
+        git push heroku HEAD:main -f
