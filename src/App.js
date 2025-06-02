@@ -25,27 +25,7 @@ const MedicalLogo = () => (
   </svg>
 );
 
-// Stethoscope SVG icon
-const StethoscopeLogo = () => (
-  <svg
-    className="app-logo"
-    xmlns="http://www.w3.org/2000/svg"
-    width="64"         // Increased from 36 to 64
-    height="64"        // Increased from 36 to 64
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#2563eb"
-    strokeWidth="2.5"  // Slightly bolder for larger size
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    style={{ verticalAlign: "middle", marginRight: "0.5rem" }}
-  >
-    <path d="M6 3v6a6 6 0 0 0 12 0V3" />
-    <circle cx="38" cy="28" r="50" />
-    <path d="M18 14v4" />
-    <path d="M6 19a6 6 0 0 0 12 0" />
-  </svg>
-);
+
 export default function App() {
   return (
      <Router>
