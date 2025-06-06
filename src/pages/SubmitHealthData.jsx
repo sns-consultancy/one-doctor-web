@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from './SubmitHealthData.module.css';
-
+import NavBar from '../components/NavBar';
 // Use environment variable for API key
 const API_KEY = process.env.REACT_APP_API_KEY;
 const API_URL = process.env.REACT_APP_API_URL;
@@ -44,6 +44,7 @@ export function SubmitHealthData() {
 
   return (
     <div className={styles.container}>
+       <NavBar />
       <h2 className={styles.title}>Submit Health Data</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
         {Object.keys(form).map((field) => (

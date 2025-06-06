@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import NavBar from '../components/NavBar';
 import styles from './ViewHealthData.module.css';
 // Use environment variable for API key
 const API_KEY = process.env.REACT_APP_API_KEY;
@@ -25,6 +26,7 @@ export function ViewHealthData() {
 
   return (
     <div className={styles.container}>
+        <NavBar />
       <h2 className={styles.title}>View Health Data</h2>
       <input
         placeholder="Enter User ID"
