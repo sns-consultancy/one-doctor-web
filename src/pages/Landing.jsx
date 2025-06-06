@@ -1,13 +1,12 @@
 import styles from './Home.module.css';
 import React from "react";
 import { motion } from "framer-motion";
-import { FileText } from "lucide-react";
+import { Stethoscope, UserPlus } from "lucide-react";
 import { Link } from "react-router-dom";
-import NavBar from '../components/NavBar';
-export function Home() {
+
+export function Landing() {
   return (
     <div className={styles.root}>
-        <NavBar />
       <div className={styles.header}>
         <img src="/female-doctor.PNG" alt="Doctor Female" className={styles.doctorImage} />
         <div>
@@ -16,8 +15,14 @@ export function Home() {
         </div>
         <img src="/maledoctor.PNG" alt="Doctor Male" className={styles.doctorImage} />
       </div>
-
-      
+      <motion.div
+        initial={{ y: -30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 100 }}
+        className={styles.centerText}
+      >
+       
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -26,11 +31,19 @@ export function Home() {
         className={styles.cardGrid}
       >
         <Link
-          to="/medical-history"
+          to="/signup"
           className={styles.card}
         >
-          <FileText className={styles.icon} size={36} />
-          <h2 className={styles.cardTitle}>Initial Medical History</h2>
+          <UserPlus className={styles.icon} size={36} />
+          <h2 className={styles.cardTitle}>Sign Up</h2>
+        </Link>
+
+        <Link
+          to="/login"
+          className={styles.card}
+        >
+          <Stethoscope className={styles.icon} size={36} />
+          <h2 className={styles.cardTitle}>Login</h2>
         </Link>
       </motion.div>
     </div>
