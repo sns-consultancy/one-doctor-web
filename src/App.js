@@ -1,18 +1,15 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// Removed 'Navigate' since it's not being used
 import { Landing } from "./pages/Landing";
 import { Home } from "./pages/Home";
 import { SubmitHealthData } from "./pages/SubmitHealthData";
 import { ViewHealthData } from "./pages/ViewHealthData";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import { MedicalHistory } from "./pages/MedicalHistory";
+import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
-
-// ProtectedRoute component
-function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('token');
-  return token ? children : <Navigate to="/login" replace />;
-}
 
 export default function App() {
   return (
@@ -43,6 +40,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <ViewHealthData />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/medical-history"
+            element={
+              <ProtectedRoute>
+                <MedicalHistory />
               </ProtectedRoute>
             }
           />
