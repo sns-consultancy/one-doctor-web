@@ -1,7 +1,7 @@
 import styles from './Home.module.css';
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FileText, PlusCircle, ClipboardList } from "lucide-react";
+import { PlusCircle, ClipboardList } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getMedicalHistory } from "../services/healthService";
 import NavBar from '../components/NavBar';
