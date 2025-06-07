@@ -65,7 +65,7 @@ export const registerUser = async (userData) => {
   }
   
   try {
-    const response = await fetch(`${API_URL}/api/auth/register`, {
+    const response = await fetch(`${API_URL}/api/auth/signup`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(userData),
