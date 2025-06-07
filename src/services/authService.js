@@ -29,7 +29,7 @@ export const loginUser = async (username, password) => {
   }
   
   try {
-    const response = await fetch(`${API_URL}/auth/login`, {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ username, password }),
@@ -65,7 +65,7 @@ export const registerUser = async (userData) => {
   }
   
   try {
-    const response = await fetch(`${API_URL}/auth/register`, {
+    const response = await fetch(`${API_URL}/api/auth/register`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(userData),
