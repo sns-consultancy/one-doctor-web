@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import NavBar from "../components/NavBar";
-import { getMedicalHistory, saveMedicalHistory, deleteMedicalHistory } from "../services/healthService";
+import { getMedicalHistory, saveMedicalHistory } from "../services/healthService";
 import styles from "./MedicalHistory.module.css";
 
 export function MedicalHistory() {
