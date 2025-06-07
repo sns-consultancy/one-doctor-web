@@ -72,10 +72,52 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
+
+
 .header {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 2rem;
   gap: 2rem;
+}
+
+
+/* Add this to your Home.module.css file */
+.cardLoaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120px;
+}
+
+.cardLoader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(59, 130, 246, 0.2);
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cardDescription {
+  margin-top: 0.5rem;
+  color: #64748b;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.card {
+  transition: all 0.3s ease;
+}
+
+.cardLoading {
+  opacity: 0.7;
+  pointer-events: none;
 }
