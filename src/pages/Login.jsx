@@ -1,52 +1,66 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { loginUser } from '../services/authService';
 import styles from './Signup.module.css';
-
-const API_URL = process.env.REACT_APP_API_URL;
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    
+    if (!username || !password) {
+      setMessage('Please enter both username and password');
+      return;
+    }
+    
     try {
-      const res = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-      const data = await res.json();
-      if (res.ok && data.status === "success") {
-        localStorage.setItem('token', data.access_token);
-        setMessage("Login successful");
-        setTimeout(() => navigate('/home'), 1000); // Redirect to /home after 1s
-      } else {
-        setMessage(data.message || "Login failed");
-      }
+      setLoading(true);
+      setMessage('');
+      
+      // Call loginUser but don't store the response since we're not using it
+      await loginUser(username, password);
+      
+      setMessage("Login successful");
+      setTimeout(() => navigate('/home'), 1000); // Redirect to /home after 1s
     } catch (err) {
-      setMessage("Login failed");
+      setMessage(err.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Login</h2>
-      <input
-        className={styles.input}
-        placeholder="Username"
-        onChange={(e) => setUsername(e.target.value)}
-        value={username}
-      />
-      <input
-        className={styles.input}
-        placeholder="Password"
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
-      />
-      <button className={styles.button} onClick={handleLogin}>Login</button>
+      <form onSubmit={handleLogin}>
+        <input
+          className={styles.input}
+          placeholder="Username"
+          onChange={(e) => setUsername(e.target.value)}
+          value={username}
+          disabled={loading}
+        />
+        <input
+          className={styles.input}
+          placeholder="Password"
+          type="password"
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+          disabled={loading}
+        />
+        <button 
+          type="submit" 
+          className={styles.button}
+          disabled={loading}
+        >
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
+      </form>
       {message && <p className={styles.message}>{message}</p>}
       <p className={styles.signupOption}>
         Don't have an account? <Link to="/signup" className={styles.signupLink}>Sign up</Link>
