@@ -1128,8 +1128,8 @@ button:focus, input:focus, textarea:focus {
   }
   
   /* Adjust for mobile browser chrome */
-  .form {
-    max-height: calc(100vh - 180px);
-    max-height: calc(-webkit-fill-available - 180px);
-  }
+ .form {
+  max-height: calc(100vh - 180px);
+  max-height: calc(var(--vh, 1vh) * 100 - 180px);
+}
 }
