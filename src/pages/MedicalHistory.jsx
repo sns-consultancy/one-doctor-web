@@ -2,12 +2,68 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   Save, Clipboard, Heart, Activity, AlertCircle, 
-  Pill, ScrollText, Loader, CheckCircle, Trash
+  Pill,  Loader, CheckCircle, Trash, 
+  CheckSquare, ChevronDown, ChevronUp
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import NavBar from "../components/NavBar";
 import { getMedicalHistory, saveMedicalHistory } from "../services/healthService";
 import styles from "./MedicalHistory.module.css";
+
+// Categorized medical history data
+const medicalHistoryData = [
+  { category: "Environmental Allergy", condition: "Pollen" },
+  { category: "Environmental Allergy", condition: "Dust Mites" },
+  { category: "Environmental Allergy", condition: "Pet Dander" },
+  { category: "Food Allergy", condition: "Peanuts" },
+  { category: "Food Allergy", condition: "Shellfish" },
+  { category: "Food Allergy", condition: "Eggs" },
+  { category: "Food Allergy", condition: "Milk" },
+  { category: "Food Allergy", condition: "Wheat (Celiac)" },
+  { category: "Medication Allergy", condition: "Penicillin" },
+  { category: "Medication Allergy", condition: "NSAIDs (Ibuprofen, Aspirin)" },
+  { category: "Medication Allergy", condition: "Latex" },
+  { category: "Insect Allergy", condition: "Bee Stings" },
+  { category: "Insect Allergy", condition: "Fire Ants" },
+  { category: "Surgery", condition: "Appendectomy" },
+  { category: "Surgery", condition: "Gallbladder Removal" },
+  { category: "Surgery", condition: "Heart Bypass Surgery" },
+  { category: "Surgery", condition: "Cesarean Section" },
+  { category: "Surgery", condition: "Mastectomy" },
+  { category: "Surgery", condition: "Hernia Repair" },
+  { category: "Minor Surgery", condition: "Tonsillectomy" },
+  { category: "Minor Surgery", condition: "Cataract Surgery" },
+  { category: "Minor Surgery", condition: "Mole Removal" },
+  { category: "Genetic Disease", condition: "Diabetes Type 1/2" },
+  { category: "Genetic Disease", condition: "Breast Cancer (BRCA1/2)" },
+  { category: "Genetic Disease", condition: "Colon Cancer" },
+  { category: "Genetic Disease", condition: "Sickle Cell Anemia" },
+  { category: "Genetic Disease", condition: "Cystic Fibrosis" },
+  { category: "Genetic Disease", condition: "Thalassemia" },
+  { category: "Genetic Disease", condition: "Hemophilia" },
+  { category: "Neurological Genetic", condition: "Alzheimer's" },
+  { category: "Neurological Genetic", condition: "Parkinson's" },
+  { category: "Neurological Genetic", condition: "Bipolar Disorder" },
+  { category: "Chronic Condition", condition: "Hypertension" },
+  { category: "Chronic Condition", condition: "Asthma" },
+  { category: "Chronic Condition", condition: "Heart Disease" },
+  { category: "Chronic Condition", condition: "COPD" },
+  { category: "Chronic Condition", condition: "Arthritis" },
+  { category: "Chronic Condition", condition: "Thyroid Disease" },
+  { category: "Chronic Condition", condition: "Kidney Disease" },
+  { category: "Chronic Condition", condition: "Liver Disease" },
+  { category: "Mental Health", condition: "Depression" },
+  { category: "Mental Health", condition: "Anxiety" },
+];
+
+// Group conditions by category
+const groupedConditions = medicalHistoryData.reduce((acc, item) => {
+  if (!acc[item.category]) {
+    acc[item.category] = [];
+  }
+  acc[item.category].push(item.condition);
+  return acc;
+}, {});
 
 export function MedicalHistory() {
   const navigate = useNavigate();
@@ -17,11 +73,13 @@ export function MedicalHistory() {
   const [error, setError] = useState(null);
   const [userId, setUserId] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState({});
   
-  // Form data state matching the API structure
+  // Form data state matching the API structure with categorized conditions
   const [formData, setFormData] = useState({
     user_id: "",
     conditions: [],
+    categorizedConditions: {}, // Store conditions by category
     otherConditions: "",
     allergies: [],
     otherAllergies: "",
@@ -40,6 +98,15 @@ export function MedicalHistory() {
     },
     last_updated: new Date().toISOString()
   });
+
+  // Initialize expanded state for each category
+  useEffect(() => {
+    const initialExpandedState = Object.keys(groupedConditions).reduce((acc, category) => {
+      acc[category] = true; // Start with all categories expanded
+      return acc;
+    }, {});
+    setExpandedCategories(initialExpandedState);
+  }, []);
 
   // Check for token and get userId on component mount
   useEffect(() => {
@@ -95,10 +162,29 @@ export function MedicalHistory() {
       const response = await getMedicalHistory(id);
       
       if (response.data) {
+        // Process the medical history response
+        const conditions = response.data.conditions || [];
+        
+        // Create categorized structure from flat conditions array
+        const categorizedConditions = {};
+        conditions.forEach(condition => {
+          // Find which category this condition belongs to
+          for (const item of medicalHistoryData) {
+            if (item.condition === condition) {
+              if (!categorizedConditions[item.category]) {
+                categorizedConditions[item.category] = [];
+              }
+              categorizedConditions[item.category].push(condition);
+              break;
+            }
+          }
+        });
+        
         // Transform API data to form data structure
         setFormData({
           user_id: id,
-          conditions: response.data.conditions || [],
+          conditions: conditions,
+          categorizedConditions: categorizedConditions,
           allergies: response.data.allergies || [],
           medications: response.data.medications || [],
           surgeries: response.data.surgeries || [],
@@ -124,6 +210,51 @@ export function MedicalHistory() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleCategoryExpand = (category) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
+
+  const handleCategorizedConditionChange = (category, condition) => {
+    setFormData(prev => {
+      // Check if condition is already selected
+      const isSelected = prev.conditions.includes(condition);
+      
+      let updatedConditions = [...prev.conditions];
+      let updatedCategorizedConditions = { ...prev.categorizedConditions };
+      
+      if (isSelected) {
+        // Remove condition from both arrays
+        updatedConditions = updatedConditions.filter(c => c !== condition);
+        
+        if (updatedCategorizedConditions[category]) {
+          updatedCategorizedConditions[category] = updatedCategorizedConditions[category].filter(c => c !== condition);
+          
+          // If category is now empty, remove it
+          if (updatedCategorizedConditions[category].length === 0) {
+            delete updatedCategorizedConditions[category];
+          }
+        }
+      } else {
+        // Add condition to both arrays
+        updatedConditions.push(condition);
+        
+        if (!updatedCategorizedConditions[category]) {
+          updatedCategorizedConditions[category] = [];
+        }
+        updatedCategorizedConditions[category].push(condition);
+      }
+      
+      return {
+        ...prev,
+        conditions: updatedConditions,
+        categorizedConditions: updatedCategorizedConditions
+      };
+    });
   };
 
   const handleCheckboxChange = (category, value) => {
@@ -152,11 +283,9 @@ export function MedicalHistory() {
     }));
   };
 
-
-
   const handleArrayInputChange = (category, e) => {
     const { value } = e.target;
-    if (value.trim()) {
+    if (value.trim() !== undefined) {
       setFormData(prev => ({
         ...prev,
         [`other${category.charAt(0).toUpperCase() + category.slice(1)}`]: value
@@ -183,6 +312,7 @@ export function MedicalHistory() {
       setFormData({
         user_id: userId,
         conditions: [],
+        categorizedConditions: {},
         otherConditions: "",
         allergies: [],
         otherAllergies: "",
@@ -310,34 +440,58 @@ export function MedicalHistory() {
           transition={{ delay: 0.3 }}
           onSubmit={handleSubmit}
         >
-          {/* Medical Conditions Section */}
+          {/* Categorized Medical Conditions Section */}
           <div className={styles.section}>
             <h2 className={styles.sectionTitle}>
               <Heart size={20} />
               Medical Conditions
             </h2>
             <div className={styles.formGroup}>
-              <label className={styles.checkboxGroupLabel}>
-                Do you have any of these medical conditions? (select all that apply)
-              </label>
-              <div className={styles.checkboxGrid}>
-                {[
-                  "Diabetes", "Hypertension", "Asthma", "Heart Disease", 
-                  "COPD", "Cancer", "Arthritis", "Thyroid Disease",
-                  "Kidney Disease", "Liver Disease", "Depression", "Anxiety"
-                ].map((condition) => (
-                  <div className={styles.checkboxOption} key={condition}>
-                    <input
-                      type="checkbox"
-                      id={`condition${condition.replace(/\s+/g, '')}`}
-                      checked={formData.conditions.includes(condition)}
-                      onChange={() => handleCheckboxChange('conditions', condition)}
-                    />
-                    <label htmlFor={`condition${condition.replace(/\s+/g, '')}`}>{condition}</label>
-                  </div>
-                ))}
-              </div>
+              <p className={styles.formInstruction}>
+                Please select all conditions that apply to you. Click on category headers to expand or collapse sections.
+              </p>
               
+              {/* Render categorized conditions */}
+              {Object.keys(groupedConditions).map((category) => (
+                <div key={category} className={styles.categorySection}>
+                  <div 
+                    className={styles.categoryHeader}
+                    onClick={() => toggleCategoryExpand(category)}
+                  >
+                    <div className={styles.categoryTitle}>
+                      {category}
+                      <span className={styles.categoryCount}>
+                        {formData.categorizedConditions[category]?.length || 0}
+                        /{groupedConditions[category].length}
+                      </span>
+                    </div>
+                    {expandedCategories[category] ? 
+                      <ChevronUp size={18} /> : 
+                      <ChevronDown size={18} />
+                    }
+                  </div>
+                  
+                  {expandedCategories[category] && (
+                    <div className={styles.checkboxGrid}>
+                      {groupedConditions[category].map((condition) => (
+                        <div className={styles.checkboxOption} key={condition}>
+                          <input
+                            type="checkbox"
+                            id={`condition${condition.replace(/\s+/g, '')}`}
+                            checked={formData.conditions.includes(condition)}
+                            onChange={() => handleCategorizedConditionChange(category, condition)}
+                          />
+                          <label htmlFor={`condition${condition.replace(/\s+/g, '')}`}>
+                            {condition}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              {/* Custom condition input */}
               <div className={styles.addCustomField}>
                 <input
                   type="text"
@@ -350,22 +504,41 @@ export function MedicalHistory() {
                   type="button" 
                   className={styles.addButton}
                   onClick={() => addCustomItem('conditions')}
-                  disabled={!formData.otherConditions.trim()}
+                  disabled={!formData.otherConditions?.trim()}
                 >
                   Add
                 </button>
               </div>
               
+              {/* Display selected conditions summary */}
               {formData.conditions.length > 0 && (
-                <div className={styles.selectedItems}>
-                  <p>Selected conditions:</p>
+                <div className={styles.selectedSummary}>
+                  <h3 className={styles.summaryTitle}>
+                    <CheckSquare size={18} />
+                    Selected Conditions Summary
+                  </h3>
                   <div className={styles.tagList}>
                     {formData.conditions.map((condition, index) => (
                       <div className={styles.tag} key={index}>
                         {condition}
                         <button 
                           type="button"
-                          onClick={() => handleCheckboxChange('conditions', condition)}
+                          onClick={() => {
+                            // Find category for this condition
+                            let foundCategory = null;
+                            for (const item of medicalHistoryData) {
+                              if (item.condition === condition) {
+                                foundCategory = item.category;
+                                break;
+                              }
+                            }
+                            
+                            if (foundCategory) {
+                              handleCategorizedConditionChange(foundCategory, condition);
+                            } else {
+                              handleCheckboxChange('conditions', condition);
+                            }
+                          }}
                           className={styles.removeTag}
                         >
                           ×
@@ -378,74 +551,7 @@ export function MedicalHistory() {
             </div>
           </div>
 
-          {/* Allergies Section */}
-          <div className={styles.section}>
-            <h2 className={styles.sectionTitle}>
-              <AlertCircle size={20} />
-              Allergies
-            </h2>
-            <div className={styles.formGroup}>
-              <label className={styles.checkboxGroupLabel}>
-                Do you have any of these allergies? (select all that apply)
-              </label>
-              <div className={styles.checkboxGrid}>
-                {[
-                  "Penicillin", "Peanuts", "Latex", "Insect Stings", "Eggs",
-                  "Tree Nuts", "Shellfish", "Milk", "Soy", "Wheat", "Sulfa Drugs"
-                ].map((allergy) => (
-                  <div className={styles.checkboxOption} key={allergy}>
-                    <input
-                      type="checkbox"
-                      id={`allergy${allergy.replace(/\s+/g, '')}`}
-                      checked={formData.allergies.includes(allergy)}
-                      onChange={() => handleCheckboxChange('allergies', allergy)}
-                    />
-                    <label htmlFor={`allergy${allergy.replace(/\s+/g, '')}`}>{allergy}</label>
-                  </div>
-                ))}
-              </div>
-              
-              <div className={styles.addCustomField}>
-                <input
-                  type="text"
-                  className={styles.input}
-                  placeholder="Enter other allergy"
-                  value={formData.otherAllergies}
-                  onChange={(e) => handleArrayInputChange('allergies', e)}
-                />
-                <button 
-                  type="button" 
-                  className={styles.addButton}
-                  onClick={() => addCustomItem('allergies')}
-                  disabled={!formData.otherAllergies.trim()}
-                >
-                  Add
-                </button>
-              </div>
-              
-              {formData.allergies.length > 0 && (
-                <div className={styles.selectedItems}>
-                  <p>Selected allergies:</p>
-                  <div className={styles.tagList}>
-                    {formData.allergies.map((allergy, index) => (
-                      <div className={styles.tag} key={index}>
-                        {allergy}
-                        <button 
-                          type="button" 
-                          onClick={() => handleCheckboxChange('allergies', allergy)}
-                          className={styles.removeTag}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Medications Section */}
+          {/* Allergies Section - we'll keep this as is since allergies are now part of the categorized conditions */}
           <div className={styles.section}>
             <h2 className={styles.sectionTitle}>
               <Pill size={20} />
@@ -467,7 +573,7 @@ export function MedicalHistory() {
                   type="button" 
                   className={styles.addButton}
                   onClick={() => addCustomItem('medications')}
-                  disabled={!formData.otherMedications.trim()}
+                  disabled={!formData.otherMedications?.trim()}
                 >
                   Add
                 </button>
@@ -495,60 +601,6 @@ export function MedicalHistory() {
               
               {formData.medications.length === 0 && (
                 <p className={styles.note}>No medications added yet</p>
-              )}
-            </div>
-          </div>
-
-          {/* Surgeries Section */}
-          <div className={styles.section}>
-            <h2 className={styles.sectionTitle}>
-              <ScrollText size={20} />
-              Surgical History
-            </h2>
-            <div className={styles.formGroup}>
-              <label htmlFor="surgeries">
-                List any surgeries you've had with years if known
-              </label>
-              <div className={styles.addCustomField}>
-                <input
-                  type="text"
-                  className={styles.input}
-                  placeholder="Enter surgery (e.g., Appendectomy 2010)"
-                  value={formData.otherSurgeries}
-                  onChange={(e) => handleArrayInputChange('surgeries', e)}
-                />
-                <button 
-                  type="button" 
-                  className={styles.addButton}
-                  onClick={() => addCustomItem('surgeries')}
-                  disabled={!formData.otherSurgeries.trim()}
-                >
-                  Add
-                </button>
-              </div>
-              
-              {formData.surgeries.length > 0 && (
-                <div className={styles.selectedItems}>
-                  <p>Previous surgeries:</p>
-                  <div className={styles.tagList}>
-                    {formData.surgeries.map((surgery, index) => (
-                      <div className={styles.tag} key={index}>
-                        {surgery}
-                        <button 
-                          type="button" 
-                          onClick={() => handleCheckboxChange('surgeries', surgery)}
-                          className={styles.removeTag}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {formData.surgeries.length === 0 && (
-                <p className={styles.note}>No surgeries added yet</p>
               )}
             </div>
           </div>
@@ -627,31 +679,75 @@ export function MedicalHistory() {
         </motion.form>
         
         {/* Confirmation Dialog */}
-        {showConfirm && (
-          <div className={styles.confirmationOverlay}>
-            <div className={styles.confirmationDialog}>
-              <h3>Submit Medical History?</h3>
-              <p>Please confirm that the information you've entered is correct.</p>
-              <div className={styles.confirmButtons}>
-                <button 
-                  onClick={() => setShowConfirm(false)}
-                  className={styles.cancelButton}
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={() => {
-                    setShowConfirm(false);
-                    submitForm();
-                  }}
-                  className={styles.confirmButton}
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
+      {/* Enhanced Confirmation Dialog */}
+{showConfirm && (
+  <div className={styles.confirmationOverlay}>
+    <motion.div 
+      className={styles.confirmationDialog}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className={styles.confirmationHeader}>
+        <AlertCircle size={20} />
+        <h3>Submit Medical History?</h3>
+      </div>
+      
+      <div className={styles.confirmationContent}>
+        <p>Please review and confirm your medical history information:</p>
+        
+        <div className={styles.confirmationSummary}>
+          <div className={styles.confirmItem}>
+            <span className={styles.confirmLabel}>Medical Conditions:</span>
+            <span className={styles.confirmValue}>{formData.conditions.length} selected</span>
           </div>
-        )}
+          
+          {formData.medications.length > 0 && (
+            <div className={styles.confirmItem}>
+              <span className={styles.confirmLabel}>Medications:</span>
+              <span className={styles.confirmValue}>{formData.medications.length} listed</span>
+            </div>
+          )}
+          
+          <div className={styles.confirmItem}>
+            <span className={styles.confirmLabel}>Family History:</span>
+            <span className={styles.confirmValue}>
+              {Object.entries(formData.family_history)
+                .filter(([key, value]) => value === true)
+                .length} items
+            </span>
+          </div>
+          
+          <div className={styles.confirmItem}>
+            <span className={styles.confirmLabel}>Last Updated:</span>
+            <span className={styles.confirmValue}>
+              {new Date().toLocaleDateString()}
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div className={styles.confirmButtons}>
+        <button 
+          onClick={() => setShowConfirm(false)}
+          className={styles.cancelButton}
+        >
+          Cancel
+        </button>
+        <button 
+          onClick={() => {
+            setShowConfirm(false);
+            submitForm();
+          }}
+          className={styles.confirmButton}
+        >
+          Confirm & Submit
+        </button>
+      </div>
+    </motion.div>
+  </div>
+)}
+        
       </div>
     </div>
   );
