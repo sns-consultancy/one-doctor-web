@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { 
   Save, Clipboard, Heart, Activity, AlertCircle, 
-  Pill, ScrollText, Loader, CheckCircle, Trash, 
+  Pill,  Loader, CheckCircle, Trash, 
   CheckSquare, ChevronDown, ChevronUp
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
