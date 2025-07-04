@@ -1,95 +1,121 @@
+/* 🌐 Base Styles */
 body {
-  /* Gradient background for the whole app */
+  margin: 0;
   min-height: 100vh;
-  background: linear-gradient(135deg, #3607de 0%, #4fc2a7 50%, #f9fafb 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #3607DE 0%, #4FC2A7 50%, #F9FAFB 100%);
 }
-
-/* ...existing code... */
-
+ 
+/* 🧱 App Container */
 .app-container {
   padding: 2rem;
-  max-width: 900px;
+  max-width: 1000px;
   margin: 2rem auto;
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 18px;
-  box-shadow: 0 8px 32px 0 rgba(31, 41, 55, 0.15);
-  backdrop-filter: blur(2px);
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(4px);
 }
-
-
-
-
-
+ 
+/* 🖼️ Branding */
 .App {
   text-align: center;
 }
-
+ 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
-
+ 
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+ 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-
-.app-container {
-  padding: 2rem;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.app-title {
-  color: #2563eb;
-  text-align: center;
-  margin-bottom: 2rem;
-  font-size: 2rem;
-  font-weight: bold;
-}
-
-.app-nav {
+ 
+/* 🧭 Navigation Bar */
+nav {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
-
-.app-link {
-  color: #2563eb;
+ 
+nav a {
+  color: #2563EB;
   text-decoration: none;
-  font-weight: 500;
-  transition: text-decoration 0.2s;
+  font-weight: 600;
+  font-size: 1rem;
 }
-
-.app-link:hover {
+ 
+nav a:hover {
   text-decoration: underline;
 }
-
-
+ 
+/* 🔍 Search Bar */
+.search-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+ 
+.search-bar input {
+  padding: 0.5rem;
+  width: 280px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-right: 0.5rem;
+  font-size: 1rem;
+}
+ 
+.search-bar button {
+  padding: 0.5rem 1rem;
+  background-color: #2563EB;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+ 
+.search-bar button:hover {
+  background-color: #1D4ED8;
+}
+ 
+/* 🧩 General Buttons */
+button {
+  padding: 0.5rem 1rem;
+  background-color: #2563EB;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+}
+ 
+button:hover {
+  background-color: #1D4ED8;
+}
+ 
+/* 🔵 Titles */
+.app-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2563EB;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+ 
+/* 🔹 Section Divider */
+.section {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
